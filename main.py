@@ -6,11 +6,11 @@ from PIL import Image, ImageTk
 #from tkinter import *
 window = tk.Tk()
 
-window.title("Cartoonizing")
+window.title("Image painting")
 window.geometry('1200x800')
 
 #header
-header = tk.Label(window, text="GET YOUR IMAGE CARTOONIZED HERE!", bg="red", fg="black" ,font=("none bold",35), anchor="n") 
+header = tk.Label(window, text="GET YOUR IMAGE PAINTED HERE!", bg="red", fg="black" ,font=("none bold",35), anchor="n") 
 #anchor=n for top-central justification
 header.place(x=300,y=1)
 #header.pack()
@@ -61,11 +61,11 @@ def working_design():
     img_sketching_btn.place(x=520, y=200)
     #*--------------------------------
     # #Water colour button
-    img_sketching_btn = tk.Button(window, text="Water Colour Painting", fg="black", font=("none Bold",20) , command=Oil_painting)
+    img_sketching_btn = tk.Button(window, text="Water Colour Painting", fg="black", font=("none Bold",20) , command=Water_colour_painting)
     img_sketching_btn.place(x=440, y=250)
     #*--------------------------------
     # #Pencil sketch button
-    img_sketching_btn = tk.Button(window, text="Pencil Sketch", fg="black", font=("none Bold",20) , command=Oil_painting)
+    img_sketching_btn = tk.Button(window, text="Pencil Sketch", fg="black", font=("none Bold",20) , command=Pencil_sketch)
     img_sketching_btn.place(x=520, y=300)
 
 
@@ -92,10 +92,6 @@ def open_file():
         variables.inp_image.pack()
         left_frame.update()
 
-        
-        
- 
-
 def resize_img(img):
     
     img1 = cv2.resize(img,(400,400)) #(a high-quality downsampling filter)       
@@ -112,6 +108,55 @@ def Oil_painting():
     img = cv2.merge((r,g,b))
     #convert image object into TkPhoto object
     im = Image.fromarray(img)
+    img1 = ImageTk.PhotoImage(image=im)
+    
+    variables.out_image.pack_forget()
+    rigt_frame.update()
+
+    variables.out_image = tk.Label(rigt_frame, image=img1)
+    variables.out_image.image = img1
+    variables.out_image.pack()
+    rigt_frame.update()
+
+def Water_colour_painting():
+    img_rgb = variables.img
+    img = cv2.stylization(img_rgb, sigma_s=60, sigma_r=0.6)
+    # sigma_s controls the size of the neighborhood. Range 1 - 200
+    # # sigma_r controls the how dissimilar colors within the neighborhood will be averaged. 
+    # A larger sigma_r results in large regions of constant color. Range 0 - 1
+
+    #resizing for image display
+    variables.out_img = resize_img(img)
+    #Rearranging the color channel
+    b,g,r = cv2.split(variables.out_img)
+    img = cv2.merge((r,g,b))
+    #convert image object into TkPhoto object
+    im = Image.fromarray(img)
+    img1 = ImageTk.PhotoImage(image=im)
+    
+    variables.out_image.pack_forget()
+    rigt_frame.update()
+
+    variables.out_image = tk.Label(rigt_frame, image=img1)
+    variables.out_image.image = img1
+    variables.out_image.pack()
+    rigt_frame.update()
+
+def Pencil_sketch():
+    img_rgb = variables.img
+    img, img1 = cv2.pencilSketch(img_rgb, sigma_s=60, sigma_r=0.07, shade_factor=0.05) 
+
+    # sigma_s and sigma_r are the same as in stylization.
+    # # shade_factor is a simple scaling of the output image intensity. 
+    # The higher the value, the brighter is the result. Range 0 - 0.1
+
+    #resizing for image display
+    variables.out_img = resize_img(img)
+    # #Rearranging the color channel
+    # b,g,r = cv2.split(variables.out_img)
+    # img = cv2.merge((r,g,b))
+    #convert image object into TkPhoto object
+    im = Image.fromarray(variables.out_img)
     img1 = ImageTk.PhotoImage(image=im)
     
     variables.out_image.pack_forget()
